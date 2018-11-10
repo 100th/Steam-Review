@@ -12,32 +12,36 @@ frequency = {}
 wb=openpyxl.load_workbook('newtest.xlsx', read_only=False)
 ws=wb.active
 
+sentences = []
 
 for r in ws.rows:
     row_index = r[0].row # 행 인덱스?
     review = r[4].value
-    print(review)
+    # print(review)
 
     # tokenization start
     aft_tokens = nltk.word_tokenize(review)
-    print(aft_tokens)
+    # print(aft_tokens)
 
     # stopword removal 152 words
     aft_remov = [w for w in aft_tokens if not w in stopwords.words('english')]
-    print(aft_remov) #print(stopwords.words('english')[:155]) # to see what's in stopwords
+    # print(aft_remov) #print(stopwords.words('english')[:155]) # to see what's in stopwords
 
     # stemming (어간추출) executed
     stemmer = PorterStemmer()
     aft_stem = [stemmer.stem(w) for w in aft_remov]
-    print(aft_stem) #could be "print(' '.join(singles))""
+    # print(aft_stem) #could be "print(' '.join(singles))""
+    sentences.append(aft_stem)
 
-    # frequency counting
+    # frequency counting 단어 빈도 수
     for word in aft_stem:
         count = frequency.get(word,0)
         frequency[word] = count+1
 
     frequency_list = frequency.keys()
 
+
+# 단어 빈도 수 프린트
 for w in frequency_list:
     print(w," ", frequency[w])
 

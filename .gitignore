@@ -1,0 +1,6 @@
+
+*.txt
+*.feat
+*.pyc
+*.vocab
+aclImdb/README

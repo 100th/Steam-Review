@@ -15,24 +15,38 @@ from nltk.stem import PorterStemmer # ProterStemmer
 from nltk.stem import WordNetLemmatizer # for lemmatizing
 from nltk.corpus import stopwords # for stopwords removal
 
-wb=openpyxl.load_workbook('newtest.xlsx', read_only=False)
+import re
+
+wb=openpyxl.load_workbook('reviews.xlsx', read_only=False)
 ws=wb.active
 
-sentences = []
 
+# 데이터 전처리 : 특수기호, HTML 태그 등 제거 (단, 이모티콘은 남겨둠)
+def preprocessor(text) :
+    text = re.sub('[`1234567890]', '', text)
+    text = re.sub('[~!@#$%^&*()_+]', '', text)
+    text = re.sub('[[]]', '', text)
+    text = re.sub('[{}]', '', text)
+    text = re.sub('[\']', '', text)
+    text = re.sub('[\"]', '', text)
+    parse = re.sub('[,<.>/?;:|]', '', text)
+    return parse
+
+# Stemming
+sentences = []
 for r in ws.rows:
     row_index = r[0].row # 행 인덱스?
-    review = r[4].value
-    # print(review)
+    review = r[9].value
+    # review = preprocessor(review)
 
     # tokenization start
-    aft_tokens = nltk.word_tokenize(review)
+    # aft_tokens = nltk.word_tokenize(review)
     # print(aft_tokens)
 
     # stopword removal 152 words
-    aft_remov = [w for w in aft_tokens if not w in stopwords.words('english')]
+    # aft_remov = [w for w in aft_tokens if not w in stopwords.words('english')]
     # print(aft_remov) #print(stopwords.words('english')[:155]) # to see what's in stopwords
-    sentences.append(aft_remov)
+    # sentences.append(aft_remov)
 
     # stemming (어간추출) executed
     # stemmer = PorterStemmer()
@@ -43,7 +57,7 @@ for r in ws.rows:
 # nltk.download('movie_reviews')
 # sentences = [list(s) for s in movie_reviews.sents()]
 
-# sentences[:2]
+print(sentences[:2])
 
 %time
 model = Word2Vec(sentences)

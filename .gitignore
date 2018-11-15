@@ -5,3 +5,6 @@
 *.vocab
 aclImdb/README
 ~$newtest.xlsx
+*.xlsx
+*.csv
+data/newtest.xlsx

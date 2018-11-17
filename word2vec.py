@@ -93,6 +93,7 @@ for a_line in removed_words:
 
 final_words_list = [a for i in final_words for a in i]
 
+
 # 매트릭스 생성
 # Word2Vec
 embedding_model = Word2Vec(final_words, size=100, window = 3,min_count=1)
@@ -165,11 +166,12 @@ topic_vec_final = [np.array(topic_vectors[i]).sum(axis=0) for i in topic_range]
 fi_sent_word = pd.DataFrame(final_words)
 
 game = np.array(data['kind_of_games'])
-len(names)
 data.columns[:]
 
 review_data = data['kind_of_games']
 review_data = pd.DataFrame(review_data)
+
+len(review_data)
 
 total_docu_vec = []
 for n, docu in enumerate(final_words):
@@ -184,9 +186,9 @@ game = np.array(data['kind_of_games'])
 
 game_re_vec = []
 for n, na in enumerate(game_name):
-    print("turn--> ", n, "/", len(names))
+    # print("turn--> ", n, "/", len(names))
     what_game = []
-    for ga in range(len(game)):
+    for ga in range(len(game_name)):
         if na == game[ga]:
             what_game.append(total_docu_vec[ga])
     game_re_vec.append(what_game)
@@ -201,20 +203,19 @@ for line in range(len(game_re_vec)):
         sum_line.append(tmp)
     sum_mat.append(sum_line)
 
-
 # calculate distance ------------------------------------
 
 dist_mat = []
 for p in range(len(sum_mat)):
     print("turn--> ", p, '/', len(sum_mat))
-    x_vec = [a for i in sum_mat[p] for a in i]
+    x_vec = [[a for i in sum_mat[p] for a in i]]    # 여기 수정!
     dist = [euclidean_distances(x_vec,topic_vectors[n]).tolist() for n in range(len(topic_vectors))]
     bb = [a for i in dist for a in i]
     dist_mat.append([a for i in bb for a in i])
 
-print(dist_mat)
+len(dist_mat[0])
 
 # select topic ----------------------------------------
 selected_topic = [np.argsort(dist_mat[n])[:5] for n in range(len(dist_mat))]
 
-# print(selected_topic)
+selected_topic

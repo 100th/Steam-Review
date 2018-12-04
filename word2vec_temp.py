@@ -1,16 +1,23 @@
-import nltk;import pandas as pd;import numpy as np
-from nltk.stem.snowball import SnowballStemmer;from nltk import ngrams
-from sklearn.feature_extraction.text import TfidfVectorizer,CountVectorizer; from sklearn import linear_model
+import re
+import lda
+import nltk
+import math
+import collections
+import pandas as pd
+import numpy as np
+from nltk import ngrams
+from nltk.corpus import sentiwordnet as swn
+from nltk.stem import WordNetLemmatizer
+from nltk.stem.snowball import SnowballStemmer
+from sklearn import linear_model
 from sklearn.cross_validation import KFold
-from nltk.stem import WordNetLemmatizer
-from nltk.corpus import sentiwordnet as swn
-from matplotlib import pyplot as plt; import lda
-from nltk.stem import WordNetLemmatizer
-from nltk.corpus import sentiwordnet as swn
+from sklearn.feature_extraction.text import TfidfVectorizer,CountVectorizer
+from matplotlib import pyplot as plt
 
+# for i in range(62641):
+# re.sub("[^a-zA-Z]", "apple", str(X.review[i]))
 
-X = pd.read_csv('C:/Users/Paramount/Desktop/GitHub/Steam-Review/data/reviews_sample.csv', encoding='cp949')
-
+X = pd.read_csv('C:/Users/Paramount/Desktop/GitHub/Steam-Review/dayz/dayz 2018.7-.csv', encoding='cp949')
 sens=[nltk.tokenize.sent_tokenize(X['review'][i]) for i in range(0,len(X['review']))]
 
 names=set(X['title'])
@@ -19,11 +26,9 @@ names_words = []
 for x in names:
     names_words += [ word.lower() for word in x.split() ]
 
-import collections
 cnt = collections.Counter()
 for x in names_words:
     cnt[x] += 1
-
 
 
 tokens=[]
@@ -49,12 +54,10 @@ stop+= additionalstop
 stop += names_words
 
 
-
 pos2=[]
 for t in tokens:
     pos_tokens=[token for token, pos in nltk.pos_tag(t) if pos.startswith('NN')|pos.startswith('VERB')]
     pos2.append(pos_tokens)
-
 
 
 stemmer2=SnowballStemmer("english",ignore_stopwords=True)
@@ -84,7 +87,8 @@ for doc in pos2:
 fd=nltk.FreqDist(all_words2)
 fd_table=pd.DataFrame(np.array(fd.most_common(len(set(all_words2)))))
 fd_table[1]=fd_table[1].apply(pd.to_numeric)
-fd_table=fd_table[fd_table[1]>=100]
+fd_table=fd_table[fd_table[1]>=100]     # 100으로 줄임
+fd_table.to_csv("frequency_analysis.csv")
 
 
 #fd_table.to_csv('frequency_table_nopreprocessed_cr.csv')
@@ -121,11 +125,6 @@ for x in [3,4,5,6,7]:
         lda_results.to_csv('nwords_50_CLDA_results_NNVERB%s_%s.csv' % (x, s))
 
 
-import numpy as np
-import pandas as pd
-import math
-from sklearn import linear_model
-
 score = X[X.columns[3]]
 
 # lasso reg for sentiment dictionary
@@ -145,7 +144,7 @@ fea_score['sen_score'] = pd.to_numeric(fea_score['sen_score'])
 fea_score = fea_score[(fea_score['sen_score'] > 0) | (fea_score['sen_score'] < 0)]
 
 sentiment_list=list(fea_score['feature'])
-``
+
 # 감정 사전 개수
 # 양수를 앞으로 정렬
 fea_score.sort_values(by=['sen_score'],axis=0,ascending=False)
@@ -153,10 +152,16 @@ fea_score.sort_values(by=['sen_score'],axis=0,ascending=False)
 # 음수를 앞으로 정렬
 # fea_score.sort_values(by=['sen_score'],axis=0)[:10]
 
+fea_score.to_csv('sensitive_score.csv')
 
+
+
+"""
 # Process - 감정단어를 검색하고 앞뒤 n개 단어를 searching
-n = 3
+# ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+n = 0
 dws = []
+
 for d, docu in enumerate(sin_snowball3):
     for plo in sentiment_list:
         plo_score = list(fea_score[fea_score['feature'] == plo]['sen_score'])[0]
@@ -207,7 +212,7 @@ for i in range(0,len(game_num)-1):
         next
 
 
-lda_topic = pd.read_csv('C:/Users/Paramount/Desktop/GitHub/Steam-Review/data/lda_topic.csv', encoding='cp949')
+lda_topic = pd.read_csv('C:/Users/Paramount/Desktop/GitHub/Steam-Review/data/lda_topic3.csv', encoding='cp949')
 lda_topic
 
 
@@ -223,6 +228,7 @@ game_table = pd.concat([game_seq,topic],axis=1)
 
 senti_game_score = game_table[game_table.columns[1:]].sum()
 
-.groupby(game_table['title']).mean()
+# .groupby(game_table['title']).mean()
 
 senti_game_score
+"""
